@@ -125,7 +125,7 @@ var GAME = (function(){
 			endGame();
 		}
 		
-		// 2 - With mouses
+		// 2 - With mice
 		if (snake.head[0] == mouse[0] && snake.head[1] == mouse[1]) {
 			// Removes the mouse
 			$("#" + mouse[0] + "_" + mouse[1]).removeClass("mouse");
