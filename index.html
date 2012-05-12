@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Snake js</title>
+		<link rel="stylesheet" type="text/css" href="src/snake.css" />
+		<script type="text/javascript" src="src/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="src/snake.js"></script>
+		<script>
+			$(document).ready(function() {
+				GAME.init();
+			});
+		</script>
+	</head>
+	<body>
+		<h2>Pulsa una flecha para empezar / Press an arrow to start</h2>
+		<div id="board"></div>
+		<div class="controls">
+			<strong>Elige dificultad / Choose difficulty:</strong>
+			<input type="radio" value="1" name="radio">Fácil / Easy<br>
+			<input type="radio" value="2" checked name="radio">Medio / Medium<br>
+			<input type="radio" value="3" name="radio">Difícil / Hard<br>
+		</div>
+	</body>
+</html>
