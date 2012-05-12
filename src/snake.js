@@ -26,8 +26,9 @@ var GAME = (function(){
 		gameStarted = false,
 		// A lock for not listening multiple keys at the same time
 		blocked = false,
-		gameOver = false,
-		deadMessage = "Has muerto! / You're dead!";
+		difficulty = 0,
+		score = 0,
+		interval = null;
 
 	/*
 	 *	Draws the main board
@@ -89,67 +90,71 @@ var GAME = (function(){
 	 *	Changes snake's position based on its direction
 	 */
 	function moveSnake() {
-		if (!gameOver) {
-			// First, changes body's parts position
-			for (var i = snake.length - 1; i > 0; i--) {
-				snake.body[i][0] = snake.body[i-1][0];
-				snake.body[i][1] = snake.body[i-1][1];
-			}
-			snake.body[0][0] = snake.head[0];
-			snake.body[0][1] = snake.head[1];
-
-			// After that, based on the current direction, the head's position
-			switch (snake.direction) {
-				case 'up':
-					snake.head[1] -= 1;
-					break;
-				case 'right':
-					snake.head[0] += 1;
-					break;
-				case 'left':
-					snake.head[0] -= 1;
-					break;
-				case 'down':
-					snake.head[1] += 1;
-					break;
-			}
-
-			// Removes event-listener lock
-			blocked = false;
-
-			// Check for collisions
-
-			// 1 - With walls
-			if (snake.head[0] < 0 || snake.head[0] > cols - 1 ||
-				snake.head[1] < 0 || snake.head[1] > rows - 1) {
-				alert(deadMessage);
-				gameOver = true;
-				window.location.reload();
-			}
-			
-			// 2 - With mouses
-			if (snake.head[0] == mouse[0] && snake.head[1] == mouse[1]) {
-				// Removes the mouse
-				$("#" + mouse[0] + "_" + mouse[1]).removeClass("mouse");
-				// Our snake goes bigger!
-				snake.body[snake.length] = new Array();
-				snake.body[snake.length][0] = snake.body[snake.length - 1][0];
-				snake.body[snake.length][0] = snake.body[snake.length - 1][1];
-				snake.length += 1;
-				// And we draw a new mouse
-				createMouse();
-			}
-			
-			// With itself
-			for (var i = 0; i < snake.length; i++) {
-				if (snake.head[0] == snake.body[i][0] && 
-					snake.head[1] == snake.body[i][1]) {
-					alert(deadMessage);
-					window.location.reload();
-				}
-			}
-			renderSnake();
+		// First, changes body's parts position
+		for (var i = snake.length - 1; i > 0; i--) {
+			snake.body[i][0] = snake.body[i-1][0];
+			snake.body[i][1] = snake.body[i-1][1];
 		}
+		snake.body[0][0] = snake.head[0];
+		snake.body[0][1] = snake.head[1];
+
+		// After that, based on the current direction, the head's position
+		switch (snake.direction) {
+			case 'up':
+				snake.head[1] -= 1;
+				break;
+			case 'right':
+				snake.head[0] += 1;
+				break;
+			case 'left':
+				snake.head[0] -= 1;
+				break;
+			case 'down':
+				snake.head[1] += 1;
+				break;
+		}
+
+		// Removes event-listener lock
+		blocked = false;
+
+		// Check for collisions
+
+		// 1 - With walls
+		if (snake.head[0] < 0 || snake.head[0] > cols - 1 ||
+			snake.head[1] < 0 || snake.head[1] > rows - 1) {
+			endGame();
+		}
+		
+		// 2 - With mouses
+		if (snake.head[0] == mouse[0] && snake.head[1] == mouse[1]) {
+			// Removes the mouse
+			$("#" + mouse[0] + "_" + mouse[1]).removeClass("mouse");
+			// Our snake goes bigger!
+			snake.body[snake.length] = new Array();
+			snake.body[snake.length][0] = snake.body[snake.length - 1][0];
+			snake.body[snake.length][0] = snake.body[snake.length - 1][1];
+			snake.length += 1;
+			// We draw a new mouse
+			createMouse();
+			// If difficulty level was 4 (crazy), we reduce the delay
+			if (difficulty == 4) {
+				delay -= 2;
+				clearInterval(interval);
+				interval = setInterval(moveSnake, delay);
+			}
+			// Update the score
+			score += Math.round(200/delay);
+			$("#controls-score").html('<h2>' + score + '</h2>');
+		}
+		
+		// With itself
+		for (var i = 0; i < snake.length; i++) {
+			if (snake.head[0] == snake.body[i][0] && 
+				snake.head[1] == snake.body[i][1]) {
+				endGame();
+			}
+		}
+		renderSnake();
 	}
 
 	/*
@@ -209,19 +214,38 @@ var GAME = (function(){
 	 * 	this sets the delay between "moveSnake" calls (speed)
 	 */
 	function handleSpeed() {
-		var difficulty = $("input[name='radio']:checked").val();
+		difficulty = $("input[name='radio']:checked").val();
 		switch (difficulty) {
 			case "1":
+				difficulty = "1";
 				delay = 100;
 				break;
 			case "2":
+				difficulty = "2";
 				delay = 80;
 				break;
 			case "3":
+				difficulty = "3";
 				delay = 50;
 				break;
+			case "4":
+				difficulty = "4";
+				delay = 60;
+				break;
 		}
-		$("div.controls").remove();
+		$("#controls-score").html('<h2>' + score + '</h2>');
+	}
+
+	/*
+	 *	Ends the current game
+	 */
+	function endGame() {
+		clearInterval(interval);
+		$("div.mask").show();
+		$("#controls-score").html('<h1>Puntos / Score:<br> ' + score + '</h1>' + 
+			'<button class="playagain" onclick="window.location.reload()">' + 
+				'Jugar de nuevo<br>Play again' +
+			'</button>');
 	}
 
 	/*
@@ -230,10 +254,10 @@ var GAME = (function(){
 	function startGame() {
 		if (!gameStarted) {
 			handleSpeed();
-			$("h2").css("visibility", "hidden");
+			$("h2.tip").css("visibility", "hidden");
 			console.log("Start Game!");
 			gameStarted = true;
-			setInterval(moveSnake, delay);
+			interval = setInterval(moveSnake, delay);
 			createMouse();
 		}
 	}
