@@ -1,0 +1,55 @@
+/** 
+ * Snake.css
+ *
+ * @author Javi Manzano | @jgasteiz | https://github.com/jgasteiz
+ */
+body {
+	font-family: "Helvetica neue", Helvetica, Arial;
+	color: #fff;
+	background-color: black;
+	background-image: url(python.png);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+}
+h2 {
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+strong {
+	display: block;
+	margin-bottom: 10px;
+}
+div#board {
+	width: 600px;
+	height: 400px;
+	margin: 0 auto;
+	background: black;
+}
+div.controls {
+	width: 600px;
+	margin: 20px auto;
+}
+table {
+	width: 100%;
+	height: 100%;
+	border-spacing: 1;
+}
+/*
+	Default background color
+*/
+td {
+	background: #D7D4C7;
+}
+/*
+	Based on the class of the "td" element, changes background color
+*/
+td.head {
+	background: #1A5C20;
+}
+td.body {
+	background: #288130;
+}
+td.mouse {
+	background: #666;
+}
