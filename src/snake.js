@@ -86,18 +86,6 @@ var GAME = (function(){
 	}
 
 	/*
-	 *	Draws the snake on the board
-	 */
-	function renderSnake() {
-		$("td").removeClass("head");
-		$("td").removeClass("body");
-		draw(snake.head[0], snake.head[1], "head");
-		for (var i = 0; i < snake.length; i++) {
-			draw(snake.body[i][0], snake.body[i][1], "body");
-		}
-	}
-
-	/*
 	 *	Changes snake's position based on its direction
 	 */
 	function moveSnake() {
@@ -164,42 +152,15 @@ var GAME = (function(){
 		}
 	}
 
-
 	/*
-	 *	Draws "something" in a coordinate
-	 *  (take a look to the snake.css file for more information ;)
+	 *	Draws the snake on the board
 	 */
-	function draw(x, y, something) {
-		$("#" + x + "_" + y).addClass(something);
-	}
-
-	function handleSpeed() {
-		var difficulty = $("input[name='radio']:checked").val();
-		switch (difficulty) {
-			case "1":
-				delay = 100;
-				break;
-			case "2":
-				delay = 80;
-				break;
-			case "3":
-				delay = 50;
-				break;
-		}
-		$("div.controls").remove();
-	}
-
-	/*
-	 *	Starts the main game, moving the snake and creating the first mouse
-	 */
-	function startGame() {
-		if (!gameStarted) {
-			handleSpeed();
-			$("h2").css("visibility", "hidden");
-			console.log("Start Game!");
-			gameStarted = true;
-			setInterval(moveSnake, delay);
-			createMouse();
+	function renderSnake() {
+		$("td").removeClass("head");
+		$("td").removeClass("body");
+		draw(snake.head[0], snake.head[1], "head");
+		for (var i = 0; i < snake.length; i++) {
+			draw(snake.body[i][0], snake.body[i][1], "body");
 		}
 	}
 
@@ -232,6 +193,48 @@ var GAME = (function(){
 				// in the direction he wants
 				snake.direction = codes[code];
 			}
+		}
+	}
+
+	/*
+	 *	Draws "something" in a coordinate
+	 *  (take a look to the snake.css file for more information ;)
+	 */
+	function draw(x, y, something) {
+		$("#" + x + "_" + y).addClass(something);
+	}
+
+	/*
+	 *	Based on the difficulty selected on the main screen,
+	 * 	this sets the delay between "moveSnake" calls (speed)
+	 */
+	function handleSpeed() {
+		var difficulty = $("input[name='radio']:checked").val();
+		switch (difficulty) {
+			case "1":
+				delay = 100;
+				break;
+			case "2":
+				delay = 80;
+				break;
+			case "3":
+				delay = 50;
+				break;
+		}
+		$("div.controls").remove();
+	}
+
+	/*
+	 *	Starts the main game, moving the snake and creating the first mouse
+	 */
+	function startGame() {
+		if (!gameStarted) {
+			handleSpeed();
+			$("h2").css("visibility", "hidden");
+			console.log("Start Game!");
+			gameStarted = true;
+			setInterval(moveSnake, delay);
+			createMouse();
 		}
 	}
 
